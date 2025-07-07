@@ -1,0 +1,92 @@
+{% extends "includes/base-manager.html" %}
+{% load static %}
+{% block content %}
+
+<style>
+    .custom-margin {
+        margin-top: 50px;
+        /* Adjust the value to get the desired space */
+    }
+
+    .card {
+        margin-bottom: 20px;
+        /* Space between cards */
+    }
+
+    .content-container {
+        display: flex;
+        flex-direction: column;
+        /* Ensure cards are stacked vertically */
+        width: 100%;
+    }
+</style>
+
+<div class="content-container">
+    <!-- Card for Selector -->
+    <div class="card">
+        <div class="card-body">
+            {% include "includes/alerts.html" %}
+            <h4 class="card-title">Link Doctor with AvailabilityTime</h4>
+            <form action="{% url "doctor_time_operations" %}" method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>Doctor</label>
+                    <select class="js-example-basic-single w-100" name="doctor">
+                        {% for doctor in doctors %}
+                        <option value="{{doctor.pk}}">{{ doctor.user.first_name }} {{ doctor.user.last_name }} </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>AvailabilityTimes</label>
+                    <select class="js-example-basic-single w-100" name="time">
+                        {% for time in availabilityTimes %}
+                        <option value="{{time.pk}}">{{time.day_of_week}} {{time.start_time}} - {{time.end_time}}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Add</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Card for Table -->
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">All Dr.AvailabilityTimes</h4>
+        <div class="table-responsive" style="max-height: 550px; overflow-y: auto;">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>doctor</th>
+                        <th>Date</th>
+                        <th>Day of week</th>
+                        <th>End time</th>
+                        <th>Operation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for time in doctor_times %}
+                    <tr>
+
+                        <td>{{time.doctor.user.first_name}} {{time.doctor.user.last_name}}</td>
+                        <td>{{ time.date|date:'Y-m-d' }}</td>
+                        <td>{{time.availability.day_of_week}} </td>
+                        <td>{{time.availability.start_time}} - {{time.availability.end_time}}</td>
+                        <td>
+                            <a href="{% url "delete_dcotor_time" time.pk %}" class="btn btn-danger">Delete</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tr>
+                    <!-- Additional rows omitted for brevity -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</div>
+
+{% endblock %}

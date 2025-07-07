@@ -1,0 +1,71 @@
+{% extends "includes/base-lab.html" %}
+{% load static %}
+{% block content %}
+<section id="testResultsSection">
+    <h2>Test Results Section</h2>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-24 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Requested Tests Results</h4>
+                        <p class="card-description">Tests <code>.table</code></p>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Patient Name</th>
+                                        <th>Doctor Name</th>
+                                        <th>Test Type</th>
+                                        <th>Medical History</th>
+                                        <th>Request Date</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="requestedTestsTableBody">
+                                    {% for test in tests %}
+                                    <tr>
+                                        <td>{{ test.patient.user.first_name }} {{ test.patient.user.last_name }} </td>
+                                        <td>{{ test.appointment.doctor.user.first_name }}
+                                            {{ test.appointment.doctor.user.last_name }}</td>
+                                        <td>{{ test.test.testname }}</td>
+                                        <td>Patient has a history of high blood pressure.</td>
+                                        <td>{{ test.created_at|date:"F d, Y" }}</td>
+                                        <td>
+                                            {% if test.status == 'Pending' %}
+                                            <span class="badge badge-warning">{{ test.status }}</span>
+                                        </td>
+                                        <td><button class="btn btn-info btn-sm"
+                                                onclick="window.location.href='{% url 'test_result' test.pk %}'">Result
+                                                Test</button></td>
+
+                                        {% elif test.status == 'Completed' %}
+                                        <span class="badge badge-success">{{ test.status }}</span>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-info btn-sm"
+                                                onclick="window.location.href='{{ test.result.url }}'">See
+                                                Result</button></td>
+
+                                        {% elif test.status == 'Not Paid' %}
+                                        <span class="badge badge-danger">{{ test.status }}</span>
+                                        </td>
+                                        <td><button class="btn btn-info btn-sm" disabled
+                                                onclick="window.location.href='{% url 'test_result' test.pk%}'">Result
+                                                Test</button></td>
+
+                                        {% endif %}
+
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% endblock %}

@@ -1,0 +1,108 @@
+{% extends "includes/base-patient.html" %}
+{% load static %}
+{% block content %}
+
+
+<script>
+    function viewDetails(testName, details) {
+        const newWindow = window.open("", "_blank");
+        newWindow.document.write(`<h2>${testName} Details</h2><p>${details}</p>`);
+        newWindow.document.close();
+    }
+
+    function printPDF(pdfPath) {
+        const newWindow = window.open(pdfPath, "_blank");
+        newWindow.onload = function () {
+            newWindow.print();
+        };
+    }
+
+    function printResults(testName, date, details) {
+        const newWindow = window.open("", "_blank");
+        newWindow.document.write(`<h2>${testName} - ${date}</h2><p>${details}</p>`);
+        newWindow.document.close();
+        newWindow.print();
+    }
+
+    function downloadResultDetails(testName, details) {
+        const element = document.createElement('a');
+        const file = new Blob([`${testName} Details\n\n${details.replace(/<br>/g, '\n')}`], {
+            type: 'text/plain'
+        });
+        element.href = URL.createObjectURL(file);
+        element.download = `${testName}_Details.txt`;
+        document.body.appendChild(element); // Required for Firefox
+        element.click();
+        document.body.removeChild(element);
+    }
+
+    function viewPDF(pdfPath) {
+        const newWindow = window.open(pdfPath, "_blank");
+        newWindow.focus();
+    }
+</script>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-24 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Results</h4>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">Test Name</th>
+                                    <th class="text-center">Date</th>
+                                    <th class="text-center">Status</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for test in tests %}
+                                <tr>
+                                    <td class="text-center">{{test.test.testname}}</td>
+                                    <td class="text-center">{{ test.created_at|date:"F d, Y" }}</td>
+                                    <td class="text-center">
+                                        {% if test.status == 'Pending' %}
+                                        <span class="badge badge-warning">{{ test.status }}</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <button class="btn btn-info btn-sm" disabled>View</button>
+                                        <button class="btn btn-primary btn-sm" disabled>Print</button>
+                                        <button class="btn btn-success btn-sm" disabled>Download</button>
+                                    </td>
+                                    {% elif test.status == 'Completed' %}
+                                    <span class="badge badge-success">{{ test.status }}</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <button class="btn btn-info btn-sm"
+                                            onclick="viewPDF('{{test.result.url}}')">View</button>
+                                        <button class="btn btn-primary btn-sm"
+                                            onclick="printPDF('{{test.result.url}}')">Print</button>
+                                        <a class="btn btn-success btn-sm" href="{{test.result.url}}"
+                                            download="{{test.test.testname}}_result.pdf">Download</a>
+                                    </td>
+                                    {% elif test.status == 'Not Paid' %}
+                                    <span class="badge badge-danger">{{ test.status }}</span>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-info btn-sm" disabled>View</button>
+                                        <button class="btn btn-primary btn-sm" disabled>Print</button>
+                                        <button class="btn btn-success btn-sm" disabled>Download</button>
+                                    </td>
+                                    {% endif %}
+                                </tr>
+                                {% endfor %}
+
+                                <!-- Add more rows as needed -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

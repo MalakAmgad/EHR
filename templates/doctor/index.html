@@ -1,0 +1,65 @@
+{% extends "includes/base-doctor.html" %}
+{% load static %}
+
+{% block content %}
+  <!-- partial -->
+  <div class="main-panel">
+    <div class="content-wrapper">
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="home-tab">
+            <div class="d-sm-flex align-items-center justify-content-between border-bottom"></div>
+            <div class="tab-content tab-content-basic">
+              <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview">
+                <div class="row">
+                  <div class="col-sm-12">
+                    <div class="statistics-details d-flex align-items-center justify-content-between">
+                      <div style="height: 250px; width: 250px;">
+                        <div class="card-body">
+                          <div class="row">
+                            <div class="col-sm-6 col-md-4 col-lg-3">
+                              <h3 class="mdi mdi-human-handsdown"></h3>
+                            </div>
+                            <p class="statistics-title">Total patients</p>
+                            <h4 class="rate-percentage">{{total_patients_for_doctor}}</h4>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div style="height: 250px; width: 250px; margin: 0 auto;">
+                        <div class="card-body">
+                          <div class="row">
+                            <div class="col-sm-6 col-md-4 col-lg-3">
+                              <h3 class="mdi mdi-bookmark-check"></h3>
+                            </div>
+                            <p class="statistics-title">Total Appointments</p>
+                            <h4 class="rate-percentage">{{total_appointments_for_doctor}}</h4>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div style="height: 250px; width: 250px; margin: 0 auto;">
+                        <div class="card-body">
+                          <div class="row">
+                            <div>
+                              <a>
+                                <img src="{% static 'images/download.png' %}" style="width: 50px; height: 50px;" />
+                              </a>
+                            </div>
+                            <p class="statistics-title">Today Appointments</p>
+                            <h3 class="rate-percentage">{{confirmed_appointments_for_doctor_today}}</h3>
+                          </div>
+                        </div>
+                      </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- content-wrapper ends -->
+    <!-- partial:partials/_footer.html -->
+
+    <!-- partial -->
+  </div>
+  <!-- main-panel ends -->
+{% endblock %}

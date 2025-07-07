@@ -1,0 +1,293 @@
+{% extends "includes/base-receptionist.html" %}
+{% load static %}
+{% block content %}
+<div class="main-panel">
+    <div class="content-wrapper">
+        <h2 class="dashboard-heading">Appointment Dashboard</h2>
+        <div class="row">
+            <div class="col-lg-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Appointments Status</h4>
+                        <div class="form-group">
+                            <label for="searchSSN">Search by Patient SSN:</label>
+                            <input type="text" id="searchSSN" oninput="searchAppointments()" class="form-control">
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Doctor</th>
+                                        <th>Patient</th>
+                                        <th>Patient SSN</th>
+                                        <th>Date</th>
+                                        <th>Day of Week</th>
+                                        <th>Start Time</th>
+                                        <th>End Time</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="appointmentsTableBody">
+                                    <!-- Appointment data will be dynamically added here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <section id="manageAppointment" style="display:none;">
+            <h2>Manage Appointment</h2>
+            <form id="manageAppointmentForm">
+                <div class="form-group">
+                    <label for="appointmentID">Appointment ID:</label>
+                    <input type="text" id="appointmentID" name="appointmentID" required class="form-control" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="status">Action:</label>
+                    <select id="status" name="status" required class="form-control">
+                        <option value="Pending">Pending</option>
+                        <option value="Confirmed">Confirmed</option>
+                        <option value="Not Paid">Not Paid</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Declined">Declined</option>
+                    </select>
+                </div>
+                <input type="submit" id="submitButton" value="Submit" class="btn btn-primary">
+            </form>
+        </section>
+    </div>
+    <div class="content-wrapper">
+        <div class="row">
+            <div class="col-lg-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Confirming Canceled Appointments</h4>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Doctor</th>
+                                        <th>Patient</th>
+                                        <th>Patient SSN</th>
+                                        <th>Date</th>
+                                        <th>Day of Week</th>
+                                        <th>Start Time</th>
+                                        <th>End Time</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        {% for appointment in cancel_appointments %}
+                                        <td>{{appointment.doctor.user.first_name}}</td>
+                                        <td>{{appointment.patient_no.user.first_name}}</td>
+                                        <td>{{appointment.patient_no.user.ssn}}</td>
+                                        <td>{{appointment.availability_time.date|date:'Y-m-d'}}</td>
+                                        <td>{{appointment.availability_time.availability.day_of_week}}</td>
+                                        <td>{{appointment.availability_time.availability.start_time}}</td>
+                                        <td>{{appointment.availability_time.availability.end_time}}</td>
+                                        <td>{{appointment.status}}</td>
+                                        <td><a href="{% url "cancel_appointment" appointment.id %}"
+                                                class="btn btn-danger">Delete</a>
+                                        </td>
+                                        {% endfor %}
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% comment %} <section >
+            <h2>Confirm Cancel Appointment</h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Patient Name</th>
+                        <th>Patient SSN</th>
+                        <th>Department</th>
+                        <th>Insurance</th>
+                        <th>Bill</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="patientsTableBody">
+                    <tr>
+                        {% for appointment in appointments %}
+                        <td>{{appointment.patient_no.user.first_name}}</td>
+                        <td>{{appointment.patient_no.user.ssn}}</td>
+                        <td>{{appointment.doctor.department}}</td>
+                        <td>{{appointment.price}}</td>
+                        <td>{{appointment.price}}</td>
+                        <td><a href="{% url "patients_bills_confirm" appointment.id %}"
+                                class="btn-manage btn-paid">Paid</a>
+                        </td>
+                        {% endfor %}
+                    </tr>
+                </tbody>
+            </table>
+        </section> {% endcomment %}
+    </div>
+</div>
+
+<script>
+    const appointments = JSON.parse('{{ appointments_json|escapejs }}');
+
+    function populateAppointments() {
+        const appointmentsTableBody = document.getElementById('appointmentsTableBody');
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Set to start of the day
+        appointmentsTableBody.innerHTML = '';
+        appointments.forEach(appointment => {
+            const appointmentDate = new Date(appointment.availability_date);
+            appointmentDate.setHours(0, 0, 0, 0); // Set to start of the day
+            const isPastDate = appointmentDate < today;
+            const row = `
+            <tr>
+                <td>${appointment.doctor_first_name} ${appointment.doctor_last_name}</td>
+                <td>${appointment.patient_first_name}</td>
+                <td>${appointment.patient_ssn}</td>
+                <td>${appointmentDate.toLocaleDateString()}</td>
+                <td>${appointment.day_of_week}</td>
+                <td>${appointment.start_time}</td>
+                <td>${appointment.end_time}</td>
+                <td>
+                    <select id="status-${appointment.id}" onchange="updateStatus(${appointment.id})" ${isPastDate ? 'disabled' : ''}>
+                        <option value="Pending" ${appointment.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                        <option value="Confirmed" ${appointment.status === 'Confirmed' ? 'selected' : ''}>Confirmed</option>
+                        <option value="Declined" ${appointment.status === 'Declined' ? 'selected' : ''}>Declined</option>
+                        <option value="Not Paid" ${appointment.status === 'Not Paid' ? 'selected' : ''}>Not Paid</option>
+                        <option value="Completed" ${appointment.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                    </select>
+                </td>
+                <td>
+                    <button class="btn btn-primary" onclick="manageAppointment('${appointment.id}', '${appointment.status}', ${isPastDate})" ${isPastDate ? 'disabled' : ''}>Submit</button>
+                </td>
+            </tr>
+        `;
+            appointmentsTableBody.innerHTML += row;
+        });
+    }
+
+    function updateStatus(id) {
+        const statusSelect = document.getElementById(`status-${id}`);
+        const newStatus = statusSelect.value;
+
+        const appointment = appointments.find(app => app.id === id);
+        if (appointment) {
+            appointment.status = newStatus;
+
+            const statusLabel = document.getElementById(`status-${id}`);
+            statusLabel.classList.remove('badge-danger', 'badge-success', 'badge-pending');
+            statusLabel.classList.add(
+                `badge-${newStatus === 'Confirmed' ? 'success' : newStatus === 'Declined' ? 'danger' : 'pending'}`);
+            console.log(`Appointment ${id} status updated to: ${newStatus}`);
+        }
+    }
+
+    function manageAppointment(id, status, isPastDate) {
+        if (isPastDate) {
+            alert("Cannot change the status of a past appointment.");
+            return;
+        }
+        const statusSelect = document.getElementById(`status-${id}`);
+        const currentStatus = statusSelect.value;
+        document.getElementById('appointmentID').value = id;
+        document.getElementById('status').value = currentStatus;
+        document.getElementById('manageAppointmentForm').dispatchEvent(new Event('submit'));
+    }
+
+    function handleManageAppointment(event) {
+        event.preventDefault();
+        const appointmentID = document.getElementById('appointmentID').value;
+        const status = document.getElementById('status').value;
+
+        // Send AJAX request to update appointment status
+        fetch('{% url "update_appointment_status" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': '{{ csrf_token }}' // Include CSRF token in the request
+                },
+                body: new URLSearchParams({
+                    'appointment_id': appointmentID,
+                    'status': status
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update status in the table
+                    const appointment = appointments.find(app => app.id == appointmentID);
+                    if (appointment) {
+                        appointment.status = status;
+
+                        const statusLabel = document.getElementById(`status-${appointmentID}`);
+                        statusLabel.value = status;
+                        console.log(`Appointment ${appointmentID} status updated to: ${status}`);
+                    }
+
+                    document.getElementById('manageAppointmentForm').reset();
+                } else {
+                    console.error('Failed to update appointment status:', data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+
+    function searchAppointments() {
+        const searchSSN = document.getElementById('searchSSN').value.toLowerCase();
+        const filteredAppointments = appointments.filter(appointment => appointment.patient_ssn.toLowerCase().includes(
+            searchSSN));
+        const appointmentsTableBody = document.getElementById('appointmentsTableBody');
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Set to start of the day
+        appointmentsTableBody.innerHTML = '';
+        filteredAppointments.forEach(appointment => {
+            const appointmentDate = new Date(appointment.availability_date);
+            appointmentDate.setHours(0, 0, 0, 0); // Set to start of the day
+            const isPastDate = appointmentDate < today;
+            const row = `
+            <tr>
+                <td>${appointment.doctor_first_name} ${appointment.doctor_last_name}</td>
+                <td>${appointment.patient_first_name}</td>
+                <td>${appointment.patient_ssn}</td>
+                <td>${appointmentDate.toLocaleDateString()}</td>
+                <td>${appointment.day_of_week}</td>
+                <td>${appointment.start_time}</td>
+                <td>${appointment.end_time}</td>
+                <td>
+                    <select id="status-${appointment.id}" onchange="updateStatus(${appointment.id})" ${isPastDate ? 'disabled' : ''}>
+                        <option value="Pending" ${appointment.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                        <option value="Confirmed" ${appointment.status === 'Confirmed' ? 'selected' : ''}>Confirmed</option>
+                        <option value="Declined" ${appointment.status === 'Declined' ? 'selected' : ''}>Declined</option>
+                        <option value="Not Paid" ${appointment.status === 'Not Paid' ? 'selected' : ''}>Not Paid</option>
+                        <option value="Completed" ${appointment.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                    </select>
+                </td>
+                <td>
+                    <button class="btn btn-primary" onclick="manageAppointment('${appointment.id}', '${appointment.status}', ${isPastDate})" ${isPastDate ? 'disabled' : ''}>Submit</button>
+                </td>
+            </tr>
+        `;
+            appointmentsTableBody.innerHTML += row;
+        });
+    }
+
+    window.onload = function () {
+        populateAppointments();
+        document.getElementById('manageAppointmentForm').addEventListener('submit', handleManageAppointment);
+    };
+</script>
+
+<!-- content-wrapper ends -->
+<!-- partial:partials/_footer.html -->
+<!-- partial -->
+</div>
+{% endblock %}

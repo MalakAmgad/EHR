@@ -1,0 +1,80 @@
+{% extends "includes/base-manager.html" %}
+{% load static %}
+{% block content %}
+
+<style>
+    .custom-margin {
+        margin-top: 50px; /* Adjust the value to get the desired space */
+    }
+    .card {
+        margin-bottom: 20px; /* Space between cards */
+    }
+    .content-container {
+        display: flex;
+        flex-direction: column; /* Ensure cards are stacked vertically */
+        width: 100%;
+    }
+</style>
+
+<div class="content-container">
+    <!-- Card for Selector -->
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Link Department with Doctor</h4>
+            <form action="{% url "doctor_operations" %}" method="POST">
+                {% include "includes/alerts.html" %}
+                {% csrf_token %}
+                <div class="form-group custom-margin">
+                    <label>Doctor</label>
+                    <select class="js-example-basic-single w-100" name="doctor">
+                        {% for doctor in unassigndoctors %}
+                        <option value="{{ doctor.pk }}">{{doctor.first_name}} {{doctor.last_name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Department</label>
+                    <select class="js-example-basic-single w-100" name="department">
+                        {% for department in departments %}
+                        <option value="{{department.pk}}">{{department.name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Add</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Card for Table -->
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">All Doctors</h4>
+            <div class="table-responsive" style="max-height: 550px; overflow-y: auto;">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Department</th>
+                            <th>SSN</th>
+                            <th>Operation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for doctor in doctors %}
+                        <tr>
+                            <td>{{ doctor.user.first_name }} {{ doctor.user.last_name }}</td>
+                            <td>{{ doctor.department }}</td>
+                            <td>{{ doctor.user.ssn }}</td>
+                            <td>
+                                <a href="{% url "delete_doctor" doctor.pk %}" class="btn btn-danger">Delete</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends "includes/base-doctor.html" %}
+{% load static %}
+{% block content %}
+  <!-- partial -->
+  <div class="main-panel">
+    <div class="content-wrapper">
+      <div class="container-fluid">
+        <div class="card">
+          <div class="card-body">
+            <h3 class="dashboard-heading">Patient Information</h3>
+            <!-- Search Criteria Dropdown -->
+            <select id="searchCriteria" class="form-control mb-2">
+              <option value="name">Name</option>
+              <option value="ssn">SSN</option>
+              <option value="latestAppointmentDate">Latest Appointment Date</option>
+            </select>
+  
+            <!-- Search Input -->
+            <input type="text" id="filterInput" class="form-control mb-2" placeholder="Search...">
+  
+            <!-- Submit Button -->
+            <button id="submitButton" class="btn btn-primary mb-2">Submit</button>
+  
+            <!-- Patient Table -->
+            <div class="table-responsive">
+              <table id="patientTable" class="table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>SSN</th>
+                    <th>Gender</th>
+                    <th>Age</th>
+                    <th>Latest Appointment Date</th>
+                  </tr>
+                </thead>
+                <tbody id="patientTableBody">
+                  <!-- Dummy Data -->
+                  {% for patient in patients %}
+                  <tr>
+                    <td>{{patient.user.first_name}}</td>
+                    <td>{{patient.user.ssn}}</td>
+                    <td>{{patient.user.gender}}</td>
+                    <td>{{patient.user.birthdate|date:'Y-m-d'}}</td>
+                    {% comment %} <td>2024-05-01</td> {% endcomment %}
+                  </tr>
+                  {% endfor %}
+                  
+                  <!-- End Dummy Data -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+  </div>
+  
+    <!-- content-wrapper ends -->
+    <!-- partial:../../partials/_footer.html -->
+
+    <!-- partial -->
+  </div>
+  <!-- main-panel ends -->
+</div>
+<!-- page-body-wrapper ends -->
+</div>
+<!-- container-scroller -->
+{% endblock %}
