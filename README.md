@@ -1,6 +1,6 @@
 # Electronic Health Record (EHR) System  
 ## 🎥 Demo Video  
-<video src="https://user-images.githubusercontent.com/your_github_userid/your_video_id/your_video.mp4" width="640" height="360" controls></video>
+<video src="https://user-images.githubusercontent.com/MalakAmgad/EHR/blob/main/_Laptop%20Promo%20Video.mp4" width="640" height="360" controls></video>
 ---
 ## 📌 Project Overview  
 A Django-based EHR system designed to streamline healthcare operations by digitizing patient records, appointments, lab tests, prescriptions, and billing. Connects patients, doctors, nurses, lab specialists, and receptionists for seamless data exchange.  
@@ -21,7 +21,7 @@ A Django-based EHR system designed to streamline healthcare operations by digiti
 
 ---
 ## 📂 Database Schema  
-![Database Schema](https://github.com/MalakAmgad/EHR/blob/main/schema.png?raw=true)  
+![Database Schema](https://github.com/MalakAmgad/EHR/blob/main/DBschema.PNG?raw=true)  
 *Figure 1: Relational schema for the EHR system*  
 
 ---
@@ -32,9 +32,10 @@ A Django-based EHR system designed to streamline healthcare operations by digiti
 4. **Lab Specialist**: Processes tests and uploads results.  
 5. **Nurse**: Records initial assessments.  
 
-![Flowchart](https://github.com/MalakAmgad/EHR/blob/main/flowchart.png?raw=true)  
+![Flowchart](https://github.com/MalakAmgad/EHR/blob/main/flowchart.PNG?raw=true)  
 *Figure 2: Summarized system workflow*  
-
+![Flowchart](https://github.com/MalakAmgad/EHR/blob/main/medical%20network.PNG?raw=true)  
+*Figure 2: medical overview*
 ---
 ## � Challenges & Solutions  
 | Challenge | Solution |  
