@@ -1,6 +1,6 @@
 # Electronic Health Record (EHR) System  
-## 🎥 Demo Video  
-<video src="https://github.com/MalakAmgad/EHR/blob/main/_Laptop%20Promo%20Video.mp4" width="640" height="360" controls></video>
+## 🎥 System Demo
+![EHR System Demo](https://github.com/MalakAmgad/EHR/raw/main/Untitled%20video%20-%20Made%20with%20Clipchamp.gif?raw=true)
 ---
 ## 📌 Project Overview  
 A Django-based EHR system designed to streamline healthcare operations by digitizing patient records, appointments, lab tests, prescriptions, and billing. Connects patients, doctors, nurses, lab specialists, and receptionists for seamless data exchange.  
